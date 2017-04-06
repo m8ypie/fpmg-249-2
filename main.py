@@ -12,12 +12,11 @@ application = Bottle()
 
 @application.route('/')
 def index():
-    info = {
-        'title': 'This is the Title',
-        'content': 'This is the content.'
-    }
-    return template('index', info)
+    return template('main.tpl')
 
+@application.route('/about')
+def about():
+    return template('about.tpl')
 
 @application.route('/static/<filename:path>')
 def static(filename):
