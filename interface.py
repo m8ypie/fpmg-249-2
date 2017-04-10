@@ -4,15 +4,15 @@ Created on Feb 20, 2015
 @author: steve cassidy
 """
 
-import re
+import re, html
 
 def post_to_html(content):
     """Convert a post to safe HTML, quote any HTML code, convert
     URLs to live links and spot any @mentions or #tags and turn
     them into links.  Return the HTML string"""
-
-
-
+    content = html.escape(content, False)
+    content = re.compile(r'''((?:http://)[^ <>'"{}|\\^`[\]]*)''').sub(r"<a href='\1'>\1</a>", content)
+    content.replace()
     return content
 
 def post_list(db, usernick=None, limit=50):
@@ -23,6 +23,14 @@ def post_list(db, usernick=None, limit=50):
 
     Returns a list of tuples (id, timestamp, usernick, avatar,  content)
     """
+    cur = db.cursor()
+    if usernick is not None:
+        cur.execute("SELECT * FROM posts WHERE usernick=? ORDER BY timestamp", (usernick,))
+    else:
+        cur.execute("SELECT * FROM posts ORDER BY timestamp")
+    posts = cur.fetchall()
+    if len(posts) > limit: posts = posts[:limit]
+    return posts
 
 
 def post_list_followed(db, usernick, limit=50):
@@ -33,6 +41,12 @@ def post_list_followed(db, usernick, limit=50):
 
     Returns a list of tuples (id, timestamp, usernick, avatar,  content)
     """
+    cur = db.cursor()
+    posts = post_list(db, usernick, limit)
+    followers = cur.execute("SELECT follower FROM follows WHERE followed=?", (usernick,)).fetchall()
+    for follower in followers:
+        posts.append(post_list(db, follower[0], limit))
+    return posts
 
 
 def post_list_mentions(db, usernick, limit=50):
@@ -42,6 +56,13 @@ def post_list_mentions(db, usernick, limit=50):
 
     Returns a list of tuples (id, timestamp, usernick, avatar,  content)
     """
+    cur = db.cursor()
+    allposts = cur.execute("SELECT * FROM posts").fetchall()
+    mentions = []
+    for post in allposts:
+        if post[3].find("@"+usernick) > -1:
+            mentions.append(post)
+    return mentions
 
 
 
