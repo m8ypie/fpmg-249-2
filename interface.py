@@ -30,9 +30,9 @@ def post_list(db, usernick=None, limit=50):
     """
     cur = db.cursor()
     if usernick is not None:
-        cur.execute("SELECT * FROM posts WHERE usernick=? ORDER BY timestamp", (usernick,))
+        cur.execute("SELECT * FROM posts WHERE usernick=? ORDER BY timestamp DESC", (usernick,))
     else:
-        cur.execute("SELECT * FROM posts ORDER BY timestamp")
+        cur.execute("SELECT * FROM posts ORDER BY timestamp DESC")
     posts = cur.fetchall()
     if len(posts) > limit:
         posts = posts[:limit]
@@ -94,6 +94,9 @@ def user_get(db, usernick):
     """Get details of a given user
     Return a tuple (nick, avatar) or None if no such
     user can be found"""
+    cur = db.cursor()
+    cur.execute("SELECT * FROM users WHERE nick=?", (usernick,))
+    return cur.fetchone()
 
 
 def user_add(db, password, nick, avatar):

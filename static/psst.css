@@ -168,6 +168,18 @@ input[type=submit] {
     margin-bottom: 1%;
     margin-right: 1%;
 }
+.timestamp {
+    border-right-style: solid;
+    border-right-color: #87CEEB;
+    border-right-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #87CEEB;
+    border-bottom-width: 2px;
+    display: inline-block;
+    border-bottom-width: thin;
+    top: 2px;
+    font-size:12px;
+}
 .messages {
     margin-top: 30px;
 }
