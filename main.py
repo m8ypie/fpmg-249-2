@@ -60,7 +60,10 @@ def mentions(userName):
     usersPosts = '% rebase("index.tpl")\n'
     usersPosts += '<section class="messaging">'
     postedMentions = interface.post_list_mentions(db,userName)
-    po
+    for post in postedMentions:
+        usersPosts += constructPost(post, interface.user_get(db, post[2])[2])
+    usersPosts += '</section>'
+    return template(usersPosts)
 
 @application.route('/static/<filename:path>')
 def static(filename):
