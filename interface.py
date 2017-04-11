@@ -4,7 +4,9 @@ Created on Feb 20, 2015
 @author: steve cassidy
 """
 
-import re, html
+import re
+import html
+
 
 def post_to_html(content):
     """Convert a post to safe HTML, quote any HTML code, convert
@@ -12,8 +14,11 @@ def post_to_html(content):
     them into links.  Return the HTML string"""
     content = html.escape(content, False)
     content = re.compile(r'''((?:http://)[^ <>'"{}|\\^`[\]]*)''').sub(r"<a href='\1'>\1</a>", content)
-    content.replace()
+    content = re.compile(r'''((?:@)[A-Za-z]+(\.[A-Za-z]+)?)''').sub(r"<a href='/users/\1'>\1</a>", content)
+    content = content.replace("/users/@","/users/")
+    content = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''').sub(r"<strong class='hashtag'>\1</strong>", content)
     return content
+
 
 def post_list(db, usernick=None, limit=50):
     """Return a list of posts ordered by date
@@ -29,7 +34,8 @@ def post_list(db, usernick=None, limit=50):
     else:
         cur.execute("SELECT * FROM posts ORDER BY timestamp")
     posts = cur.fetchall()
-    if len(posts) > limit: posts = posts[:limit]
+    if len(posts) > limit:
+        posts = posts[:limit]
     return posts
 
 
@@ -65,7 +71,6 @@ def post_list_mentions(db, usernick, limit=50):
     return mentions
 
 
-
 def post_add(db, usernick, message):
     """Add a new post to the database.
     The date of the post will be the current time and date.
@@ -77,7 +82,6 @@ def follow_get(db, usernick):
     """Return the followers of this user as a list of nicks"""
 
 
-
 def follow_add(db, follower, followed):
     """Add a follows relationship between these two users.
     Both must be valid users, and can't be the same user.
@@ -86,12 +90,10 @@ def follow_add(db, follower, followed):
     just return True."""
 
 
-
 def user_get(db, usernick):
     """Get details of a given user
     Return a tuple (nick, avatar) or None if no such
     user can be found"""
-
 
 
 def user_add(db, password, nick, avatar):
