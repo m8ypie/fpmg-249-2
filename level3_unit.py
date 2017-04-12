@@ -1,7 +1,3 @@
-"""
-@author: Steve Cassidy
-"""
-
 import unittest
 
 from database import COMP249Db
@@ -136,35 +132,6 @@ class Test(unittest.TestCase):
             nick_from_cookie = users.session_user(self.db)
 
             self.assertEqual(nick_from_cookie, nick)
-
-
-    def test_post_add(self):
-        """Test adding new posts"""
-
-        usernick = 'Bean'
-        message = "one two three"
-
-        postid = interface.post_add(self.db, usernick, message)
-
-        # result should be an integer
-        self.assertEqual(int, type(postid))
-
-        # get all posts for this user (should be just one)
-        posts = interface.post_list(self.db, usernick=usernick)
-        self.assertEquals(1, len(posts))
-
-        # check it's the same
-        self.assertEquals(postid, posts[0][0])
-
-
-    def test_post_add_length(self):
-        """Posting a long message should fail"""
-
-        usernick = 'Bean'
-        longmessage = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
-        result = interface.post_add(self.db, usernick, longmessage)
-
-        self.assertEqual(None, result)
 
 
 

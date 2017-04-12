@@ -76,6 +76,11 @@ def post_add(db, usernick, message):
     The date of the post will be the current time and date.
 
     Return a the id of the newly created post or None if there was a problem"""
+    cur = db.cursor()
+    if len(message) <= 150:
+        cur.execute("""INSERT INTO posts (usernick, content) VALUES (?,?)""", (usernick, message))
+        db.commit()
+    return cur.lastrowid
 
 
 def follow_get(db, usernick):
