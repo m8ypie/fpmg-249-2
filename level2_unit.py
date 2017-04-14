@@ -5,8 +5,8 @@ from database import COMP249Db
 
 
 class LevelAUnitTests(unittest.TestCase):
-    
-    
+
+
     def setUp(self):
         # open an in-memory database for testing
         self.db = COMP249Db(test=True)
@@ -161,7 +161,6 @@ class LevelAUnitTests(unittest.TestCase):
         self.assertEqual(None, result)
 
 
-
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
