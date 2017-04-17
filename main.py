@@ -11,7 +11,7 @@ COOKIE_NAME = 'sessionid'
 application = Bottle()
 db = COMP249Db()
 
-def constructPost(post, pic="/static/psst.ng"):
+def constructPost(post, pic="/static/psst.png"):
     t = string.Template("""
         <div class='psst'>
             <div class='user'>
@@ -30,15 +30,28 @@ def constructPost(post, pic="/static/psst.ng"):
     }
     return t.substitute(data)
 
+def determineUser():
+    user = users.session_user(db)
+    result = {"logged_in": "False"}
+    if user is not None:
+        users.generate_session(db, user)
+        result = {"logged_in": "True", "nickname": "Logged in as "+user}
+    return result
+
+
 @application.route('/')
-def index():
+def index(dic=None):
+    if dic is None:
+        dic = {"loginFailed": ""}
     allposts = '% rebase("index.tpl")\n'
     allposts += '<section class="messaging">'
     posts = interface.post_list(db, None)
+    userValues = determineUser()
+    dic.update(userValues)
     for post in posts:
         allposts += constructPost(post)
     allposts += '</section>'
-    return template(allposts)
+    return template(allposts, dic)
 
 @application.route('/users/<userName:path>')
 def userPage(userName):
@@ -53,13 +66,15 @@ def userPage(userName):
 
 @application.route('/about')
 def about():
-    return template('about.tpl')
+    dic = determineUser()
+    dic.update({"loginFailed": ""})
+    return template('about.tpl', dic)
 
 @application.route('/mentions/<userName:path>')
 def mentions(userName):
     usersPosts = '% rebase("index.tpl")\n'
     usersPosts += '<section class="messaging">'
-    postedMentions = interface.post_list_mentions(db,userName)
+    postedMentions = interface.post_list_mentions(db, userName)
     for post in postedMentions:
         usersPosts += constructPost(post, interface.user_get(db, post[2])[2])
     usersPosts += '</section>'
@@ -70,5 +85,25 @@ def static(filename):
     return static_file(filename=filename, root='static')
 
 
+@application.post('/login')
+def login():
+    username = request.forms.get("nick")
+    password = request.forms.get("password")
+    if users.valid_user(db, username) & users.check_login(db, username, password):
+        code = 302
+        users.generate_session(db, username)
+        return redirect('/', code)
+    else:
+        dic = {"loginFailed": "Login Failed, please try again"}
+        return index(dic)
+
+
+
+@application.post('/logout')
+def logout():
+    user = users.session_user(db)
+    if user is not None:
+        users.delete_session(db, user)
+    redirect('/', 302)
 if __name__ == '__main__':
     application.run(debug=True, port=8010)

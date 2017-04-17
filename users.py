@@ -72,7 +72,7 @@ def session_user(db):
     """try to
     retrieve the user from the sessions table
     return usernick or None if no valid session is present"""
-    user = session_id = get_cookie_value(COOKIE_NAME)
+    user = session_id = bottle.request.get_cookie(COOKIE_NAME)
     if session_id is not None:
         user = getUser(db, session_id)
         if user is not None:
@@ -81,7 +81,7 @@ def session_user(db):
 
 def get_cookie_value(cookiename):
     """Stolen from given test cases (thanks Steve) Get the value of a cookie from the bottle response headers"""
-    response = bottle.response
+    response = bottle.request
     headers = response.headerlist
     for h,v in headers:
         if h == 'Set-Cookie':

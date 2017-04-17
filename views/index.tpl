@@ -5,6 +5,8 @@
     <meta name="author" content="Your Name">
     <title>Welcome to Psst!</title>
     <link rel="stylesheet" href="static/psst.css" type="text/css">
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+    <script src="static/scripts.js"></script>
 </head>
 <body>
 
@@ -23,7 +25,26 @@
                 <li class="all"><a href="#">All Posts</a></li>
                 <li class="users"><a href="#">Users</a></li>
                 <li class="about"><a href="/about">About</a></li>
-                <li class="login"><a href="#">Login</a></li>
+                <li class="login">
+                        %if logged_in=="True":
+                            <a class="logoutToggle" href="#">{{nickname}}</a>
+                            <form id="logoutform" class="logoutform" action="/logout" method="post"/>
+                                <button type="submit">Logout</button>
+                            </form>
+                        %else:
+                            <a class="loginToggle" href="#">Login</a>
+                            <form id="loginform" class="loginform" action="/login" method="post">
+                                <label><b>Username</b></label>
+                                <input type="text" placeholder="Enter Username" name="nick" required>
+
+                                <label><b>Password</b></label>
+                                <input type="password" placeholder="Enter Password" name="password" required>
+
+                                <button type="submit">Login</button>
+                            {{loginFailed}}
+                        %end
+                    </form>
+                </li>
             </ul>
         </div>
     </section>

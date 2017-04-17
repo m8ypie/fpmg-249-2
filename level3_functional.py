@@ -25,7 +25,7 @@ class Level3FunctionalTests(unittest.TestCase):
 
     def doLogin(self, user, password):
         """Perform a login with some validation along the way"""
-        
+
         response = self.app.get('/')
 
         loginform = response.forms['loginform']
@@ -34,10 +34,10 @@ class Level3FunctionalTests(unittest.TestCase):
 
         # login form action should be /login
         self.assertEqual('/login', loginform.action, "login form action should be '/login'")
- 
+
         # the form has a user field
         self.assertIn('nick', loginform.fields)
-        
+
         # and a password field
         self.assertIn('password', loginform.fields)
 
@@ -49,31 +49,31 @@ class Level3FunctionalTests(unittest.TestCase):
         return response
 
     def testLoginForms(self):
-        """As a visitor to the site, when I load the home page, 
+        """As a visitor to the site, when I load the home page,
         I see a form with entry boxes for email and password and a button labelled Login."""
 
         (password, nick, avatar) = self.users[0]
-                
-        # As a registered user, when I enter my email address (bob@here.com) and password 
+
+        # As a registered user, when I enter my email address (bob@here.com) and password
         # (bob) into the login form and click on the Login button,
-        
+
         response = self.doLogin(nick, password)
-        
+
         self.assertEqual('302 Found', response.status)
         self.assertEqual('http://localhost:80/', response.headers['Location'])
-        
-        # The response also includes a cookie with the name 
+
+        # The response also includes a cookie with the name
         # sessionid that contains some kind of random string.
 
         self.assertIn(users.COOKIE_NAME, self.app.cookies)
         sessionid = self.app.cookies[users.COOKIE_NAME]
 
     def testLoginError(self):
-        """As a registered user, when I enter my email address but get my 
-        password wrong and click on the Login button, the page I get in 
-        response contains a message "Login Failed, please try again". 
+        """As a registered user, when I enter my email address but get my
+        password wrong and click on the Login button, the page I get in
+        response contains a message "Login Failed, please try again".
         The page also includes another login form."""
-         
+
         (password, nick, avatar) = self.users[0]
 
         # try an invalid password
@@ -85,7 +85,7 @@ class Level3FunctionalTests(unittest.TestCase):
 
         # Should not have a cookie
         self.assertNotIn(users.COOKIE_NAME, self.app.cookies)
-    
+
     def testLoginPagesLogoutForm(self):
         """As a registered user, once I have logged in,
          every page that I request contains my name and the logout form."""

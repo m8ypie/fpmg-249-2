@@ -44,6 +44,16 @@ html {
 
 .login {
     float: right;
+    margin-right: 100px;
+}
+
+.loginform {
+    display: none;
+    background-color:#87CEEB;
+}
+.logoutform {
+    display: none;
+    background-color:#87CEEB;
 }
 
 .nav {
