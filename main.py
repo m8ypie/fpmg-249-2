@@ -35,23 +35,31 @@ def determineUser():
     result = {"logged_in": "False"}
     if user is not None:
         users.generate_session(db, user)
-        result = {"logged_in": "True", "nickname": "Logged in as "+user}
+        pic = interface.user_get(db, user)[2]
+        if pic is None:
+            pic = "/static/psst.png"
+        result = {"logged_in": "True", "nickname": "Logged in as "+user, "username": user, "picture": pic}
     return result
 
+
+def appendAvatar(posts):
+    newposts = []
+    for post in posts:
+        pic = interface.user_get(db, post[2])[2]
+        if pic is None:
+            pic = "/static/psst.png"
+        newposts.append((post[1], post[2], interface.post_to_html(post[3]), pic))
+    return newposts
 
 @application.route('/')
 def index(dic=None):
     if dic is None:
         dic = {"loginFailed": ""}
-    allposts = '% rebase("index.tpl")\n'
-    allposts += '<section class="messaging">'
-    posts = interface.post_list(db, None)
-    userValues = determineUser()
-    dic.update(userValues)
-    for post in posts:
-        allposts += constructPost(post)
-    allposts += '</section>'
-    return template(allposts, dic)
+    posts = appendAvatar(interface.post_list(db, None))
+    dic.update({"posts": posts})
+    dic.update(determineUser())
+    print(dic.get('posts'))
+    return template("main.tpl", dic)
 
 @application.route('/users/<userName:path>')
 def userPage(userName):
@@ -97,7 +105,13 @@ def login():
         dic = {"loginFailed": "Login Failed, please try again"}
         return index(dic)
 
-
+@application.post('/post')
+def post():
+    content = request.forms.get("post")
+    user = users.session_user(db)
+    if user is not None:
+        interface.post_add(db, user, content)
+    redirect('/')
 
 @application.post('/logout')
 def logout():
