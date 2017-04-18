@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="author" content="Your Name">
     <title>Welcome to Psst!</title>
-    <link rel="stylesheet" href="static/psst.css" type="text/css">
+    <link rel="stylesheet" href="/static/psst.css" type="text/css">
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
-    <script src="static/scripts.js"></script>
+    <script src="/static/scripts.js"></script>
 </head>
 <body>
 
@@ -18,7 +18,7 @@
      -->
 <div classes="staticBars">
     <section class="top">
-        <img class="ico" src="static/psst.png"/>
+        <img class="ico" src="/static/psst.png"/>
         <div class="nav">
             <ul>
                 <li class="home"><a href="/">Home</a></li>
