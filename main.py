@@ -58,19 +58,14 @@ def index(dic=None):
     posts = appendAvatar(interface.post_list(db, None))
     dic.update({"posts": posts})
     dic.update(determineUser())
-    print(dic.get('posts'))
     return template("main.tpl", dic)
 
 @application.route('/users/<userName:path>')
 def userPage(userName):
-    usersPosts = '% rebase("index.tpl")\n'
-    usersPosts += '<section class="messaging">'
-    posts = interface.post_list(db, userName)
-    pic = interface.user_get(db, userName)[2]
-    for post in posts:
-        usersPosts += constructPost(post, pic)
-    usersPosts += '</section>'
-    return template(usersPosts)
+    posts = appendAvatar(interface.post_list(db, userName))
+    dic = {"loginFailed": "False","posts": posts, "name": userName, "userpic": interface.user_get(db, userName)[2]}
+    dic.update(determineUser())
+    return template("user.tpl", dic)
 
 @application.route('/about')
 def about():
@@ -80,13 +75,10 @@ def about():
 
 @application.route('/mentions/<userName:path>')
 def mentions(userName):
-    usersPosts = '% rebase("index.tpl")\n'
-    usersPosts += '<section class="messaging">'
-    postedMentions = interface.post_list_mentions(db, userName)
-    for post in postedMentions:
-        usersPosts += constructPost(post, interface.user_get(db, post[2])[2])
-    usersPosts += '</section>'
-    return template(usersPosts)
+    posts = appendAvatar(interface.post_list_mentions(db, userName))
+    dic = {"loginFailed": "False", "posts": posts, "name": userName, "userpic": interface.user_get(db, userName)[2]}
+    dic.update(determineUser())
+    return template("mentions.tpl", dic)
 
 @application.route('/static/<filename:path>')
 def static(filename):
