@@ -105,6 +105,14 @@ def post():
         interface.post_add(db, user, content)
     redirect('/')
 
+@application.get('/mentioncount')
+def mention_count():
+    return(str(interface.get_counted_mentions()))
+
+@application.get('/hashtagcount')
+def hashtag_count():
+    return(str(interface.get_counted_hashtags()))
+
 @application.post('/logout')
 def logout():
     user = users.session_user(db)
@@ -112,4 +120,5 @@ def logout():
         users.delete_session(db, user)
     redirect('/', 302)
 if __name__ == '__main__':
+    interface.__init__(db)
     application.run(debug=True, port=8010)
