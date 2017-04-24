@@ -49,7 +49,7 @@
         </div>
     </section>
     <div class='sidebar'>
-
+        hi
     </div>
 </div>
 

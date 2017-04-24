@@ -17,11 +17,14 @@ html {
 /* sidebar ===================================================================================================== */
 
 .sidebar {
-    background-color: #e9ebee;
+    background-color: #FFFAFA;
     width:14%;
     height: 100%;
     margin-left: -20px;
+    top: 139px;
     position: fixed;
+    box-shadow: 0 3px 2px rgba(0,0,0,0.25);
+    z-index: 2;
 }
 .subtext {
     margin-top: 5%;
@@ -195,7 +198,7 @@ input[type=submit] {
 }
 .messaging {
     background-color: #e9ebee;
-    margin-left: 15%;
+    margin-left: 20%;
     margin-top: 190px;
     min-width: 765.8px;
     width:70%;
