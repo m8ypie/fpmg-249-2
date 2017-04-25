@@ -175,11 +175,11 @@ def post_add(db, usernick, message):
         track_tags(message)
     return cur.lastrowid
 
-def get_counted_hashtags():
-    return countedHashtags
+def get_counted_hashtags(limit=10):
+    return countedHashtags[:limit]
 
-def get_counted_mentions():
-    return countedMentions
+def get_counted_mentions(limit=10):
+    return countedMentions[:limit]
 
 def follow_get(db, usernick):
     """Return the followers of this user as a list of nicks"""
@@ -200,10 +200,6 @@ def user_get(db, usernick):
     cur = db.cursor()
     cur.execute("SELECT * FROM users WHERE nick=?", (usernick,))
     return cur.fetchone()
-
-
-def user_add(db, password, nick, avatar):
-    """Add a new user to the database"""
 
 
 def user_list(db):

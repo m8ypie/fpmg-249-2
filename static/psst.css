@@ -16,6 +16,11 @@ html {
 
 /* sidebar ===================================================================================================== */
 
+.sidetitle {
+    margin-top: 20px;
+    text-align: center
+}
+
 .sidebar {
     background-color: #FFFAFA;
     width:14%;
@@ -25,11 +30,65 @@ html {
     position: fixed;
     box-shadow: 0 3px 2px rgba(0,0,0,0.25);
     z-index: 2;
+    min-width: 232.81px;
 }
 .subtext {
     margin-top: 5%;
 }
 
+.sidenav {
+    height: 10%;
+    top:300px;
+    background-color:#87CEEB;
+    min-width: 232.81px;
+}
+
+.sidenav li {
+    width: 10px;
+    float:left;
+    border-bottom: none;
+    margin-right: 80px;
+    height: 10px;
+    line-height: 50px;
+    font-size: 1.2em;
+    display: inline-block;
+}
+
+#references {
+    list-style-type: none;
+    width: 60%;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.sidenav a {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  transition: .3s background-color;
+}
+
+.sidenav a:hover {
+  background-color: #005f5f;
+}
+
+.mentions li {
+    margin-bottom: 10px;
+}
+
+.hashtags li {
+    margin-bottom: 10px;
+}
+
+.mentions {
+    display:block;
+}
+
+.hashtags {
+    display:none;
+}
 
 /* top navigation bar ===================================================================================================== */
 .top {
@@ -102,6 +161,9 @@ html {
   cursor: default;
 }
 
+.registerText {
+    font-size: 0.6em;
+}
 
 /* text messages ===================================================================================================== */
 

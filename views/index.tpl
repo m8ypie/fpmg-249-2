@@ -41,6 +41,7 @@
                                 <input type="password" placeholder="Enter Password" name="password" required>
 
                                 <button type="submit">Login</button>
+                                <div class="registerText">Not a member? <a href="/register">Register here.</a></div>
                             {{loginFailed}}
                         %end
                     </form>
@@ -49,7 +50,15 @@
         </div>
     </section>
     <div class='sidebar'>
-        hi
+        <div class="sidetitle">Whats trending?</div>
+        <div class="sidenav">
+            <ul>
+                <li><a class="mentionsTrigger">Mentions</a></li>
+                <li><a class="hashtagsTrigger">Hashtags</a></li>
+            </ul>
+        </div>
+        <ul class='mentions', id="references"></ul>
+        <ul class='hashtags', id="references"></ul>
     </div>
 </div>
 

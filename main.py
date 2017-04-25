@@ -1,6 +1,7 @@
 __author__ = 'Steve Cassidy'
 
 from bottle import Bottle, template, static_file, request, response, HTTPError, redirect
+from pprint import pprint
 import interface
 import string
 import users
@@ -73,6 +74,12 @@ def about():
     dic.update({"loginFailed": ""})
     return template('about.tpl', dic)
 
+@application.route("/register")
+def register():
+    dic = determineUser()
+    dic.update({"loginFailed": ""})
+    return template("register.tpl", dic)
+
 @application.route('/mentions/<userName:path>')
 def mentions(userName):
     posts = appendAvatar(interface.post_list_mentions(db, userName))
@@ -105,13 +112,34 @@ def post():
         interface.post_add(db, user, content)
     redirect('/')
 
+@application.post('/register/validation')
+def validation():
+    username = request.json["nick"]
+    print(username)
+    if users.valid_user(db, username):
+        print("here")
+        response.status = 200
+        response.body = "User already exists"
+    else:
+        print("or here")
+        response.status = 200
+    return response
+
+@application.post('/register/user')
+def register_user():
+    username = request.forms.get("nick")
+    password = request.forms.get("password")
+    avatar = request.forms.get("avatar")
+    users.user_add(db, password, username, avatar)
+    redirect("/login")
+
 @application.get('/mentioncount')
 def mention_count():
-    return(str(interface.get_counted_mentions()))
+    return dict(mentions=interface.countedMentions)
 
 @application.get('/hashtagcount')
 def hashtag_count():
-    return(str(interface.get_counted_hashtags()))
+    return dict(hashtags=interface.get_counted_hashtags())
 
 @application.post('/logout')
 def logout():

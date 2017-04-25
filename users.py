@@ -43,6 +43,13 @@ def createSession(db, usernick):
     db.commit()
     return session_id
 
+def user_add(db, password, nick, avatar):
+    """Add a new user to the database"""
+    hashedpw = hashlib.sha1(password.encode()).hexdigest()
+    cur = db.cursor()
+    cur.exeute("""INSERT INTO users (nick, password, avatar) VALUES (?,?,?)""", (nick, hashedpw, avatar))
+    db.commit()
+
 
 def generate_session(db, usernick):
     """create a new session and add a cookie to the response object (bottle.response)
