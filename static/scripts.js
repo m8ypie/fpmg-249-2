@@ -9,46 +9,12 @@ $(document).ready(function(){
     })
     var usernameInput = $(".registerUsername")
     if(usernameInput){
-        console.log("usernameInput")
         var errorMessage = $(".inputError")
         var passwordInput = $(".registerPassword")
         var registerButton = $(".registerButton")
         registerButton.disabled = true
-        usernameInput.change(function() {
-            console.log("change")
-            var text = usernameInput.val()
-            console.log(text)
-            if(text.length > 6){
-                $.ajax({
-                    type:"POST",
-                    url: "/register/validation",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify({"nick":text}),
-                    success: function(data){
-                        console.log("hi")
-                        console.log("here")
-                        if(!data.invalid){
-                            if(passwordInput.val().length > 8){
-                                registerButton.disabled = false
-                            }else{
-                                console.log("here?")
-                                errorMessage.text("Password must be at least 8 characters long")
-                            }
-                        }else{
-                            console.log("or here?")
-                            errorMessage.text(data.invalid)
-                        }
-                    },
-                    error: function(err){console.log(err)}
-                    })
-            }else{
-                console.log("or here")
-                errorMessage.text("Username must be al least 6 characters long")
-                usernameInput.css("border","1px solid red")
-            }
-            console.log(errorMessage.text())
-        })
+        usernameInput.change(function(){verification(usernameInput, passwordInput, registerButton, errorMessage)})
+        passwordInput.change(function(){verification(usernameInput, passwordInput, registerButton, errorMessage)})
     }
 
     $(".mentionsTrigger").click(function(){
@@ -69,6 +35,50 @@ $(document).ready(function(){
         }
     })
 })
+
+
+
+function verification(usernameInput, passwordInput, registerButton, errorMessage) {
+    usernameInput.css("border","2px inset rgb(0, 0, 0)")
+    passwordInput.css("border","2px inset rgb(0, 0, 0)")
+    errorMessage.text("")
+    var text = usernameInput.val()
+    console.log(text)
+    if(text.length > 6){
+        $.ajax({
+            type:"POST",
+            url: "/register/validation",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({"nick":text}),
+            success: function(data){
+                console.log("hi")
+                console.log("here")
+                if(!data.invalid){
+                    passwordInput.css("border","2px inset rgb(0, 0, 0)")
+                    if(passwordInput.val().length > 8){
+                        registerButton.disabled = false
+                    }else{
+                        console.log("here?")
+                        passwordInput.css("border","2px inset red")
+                        errorMessage.text("Password must be at least 8 characters long")
+                    }
+                }else{
+                    console.log("or here?")
+                    usernameInput.css("border","2px inset red")
+                    errorMessage.text(data.invalid)
+                }
+            },
+            error: function(err){console.log(err)}
+            })
+    }else{
+        console.log("or here")
+        errorMessage.text("Username must be al least 6 characters long")
+        usernameInput.css("border","2px inset red")
+    }
+    console.log(errorMessage.text())
+}
+
 
 function getMentions(){
     $.get("/mentioncount",
