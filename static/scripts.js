@@ -24,24 +24,30 @@ $(document).ready(function(){
                     url: "/register/validation",
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    data: JSON.stringify({"nick":text})
-                }, function(data, status){
-                    console.log(data)
-                    console.log("here "+status)
-                    if(!data){
-                        if(passwordInput.value.length > 8){
-                            registerButton.disabled = false
+                    data: JSON.stringify({"nick":text}),
+                    success: function(data){
+                        console.log("hi")
+                        console.log("here")
+                        if(!data.invalid){
+                            if(passwordInput.val().length > 8){
+                                registerButton.disabled = false
+                            }else{
+                                console.log("here?")
+                                errorMessage.text("Password must be at least 8 characters long")
+                            }
                         }else{
-                            errorMessage = "Password must be at least 8 characters long"
+                            console.log("or here?")
+                            errorMessage.text(data.invalid)
                         }
-                    }else{
-                        errorMessage = data
-                    }
-                })
+                    },
+                    error: function(err){console.log(err)}
+                    })
             }else{
-                errorMessage.value = "Username must be al least 6 characters long"
+                console.log("or here")
+                errorMessage.text("Username must be al least 6 characters long")
+                usernameInput.css("border","1px solid red")
             }
-            console.log(errorMessage.value)
+            console.log(errorMessage.text())
         })
     }
 

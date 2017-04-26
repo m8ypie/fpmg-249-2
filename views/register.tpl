@@ -12,4 +12,6 @@
 
         <button class="registerButton" type="submit">Register</button>
     </form>
+
+    <div class="inputError"></div>
 </section>

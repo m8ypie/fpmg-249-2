@@ -115,15 +115,13 @@ def post():
 @application.post('/register/validation')
 def validation():
     username = request.json["nick"]
-    print(username)
+    result = {}
     if users.valid_user(db, username):
-        print("here")
         response.status = 200
-        response.body = "User already exists"
+        result = {"invalid": "User already exists"}
     else:
-        print("or here")
         response.status = 200
-    return response
+    return result
 
 @application.post('/register/user')
 def register_user():
