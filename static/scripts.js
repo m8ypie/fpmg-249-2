@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
 
     $(".loginToggle").click(function(){
@@ -12,24 +13,19 @@ $(document).ready(function(){
         var errorMessage = $(".inputError")
         var passwordInput = $(".registerPassword")
         var registerButton = $(".registerButton")
-        registerButton.disabled = true
+        registerButton.prop('disabled', true)
         usernameInput.change(function(){verification(usernameInput, passwordInput, registerButton, errorMessage)})
         passwordInput.change(function(){verification(usernameInput, passwordInput, registerButton, errorMessage)})
     }
 
     $(".mentionsTrigger").click(function(){
-        console.log("mentions outer")
         if(!$(".mentions").is(":visible")){
-        console.log("mentions inner")
             $(".mentions").toggle()
             $(".hashtags").toggle()
         }
     })
     $(".hashtagsTrigger").click(function(){
-        console.log("hashtags outer")
-        console.log($(".hashtags").is(":visible"))
         if(!$(".hashtags").is(":visible")){
-            console.log("hashtags inner")
             $(".mentions").toggle()
             $(".hashtags").toggle()
         }
@@ -43,7 +39,6 @@ function verification(usernameInput, passwordInput, registerButton, errorMessage
     passwordInput.css("border","2px inset rgb(0, 0, 0)")
     errorMessage.text("")
     var text = usernameInput.val()
-    console.log(text)
     if(text.length > 6){
         $.ajax({
             type:"POST",
@@ -52,31 +47,27 @@ function verification(usernameInput, passwordInput, registerButton, errorMessage
             dataType: "json",
             data: JSON.stringify({"nick":text}),
             success: function(data){
-                console.log("hi")
-                console.log("here")
                 if(!data.invalid){
                     passwordInput.css("border","2px inset rgb(0, 0, 0)")
                     if(passwordInput.val().length > 8){
-                        registerButton.disabled = false
+                        registerButton.prop('disabled', false)
                     }else{
-                        console.log("here?")
                         passwordInput.css("border","2px inset red")
                         errorMessage.text("Password must be at least 8 characters long")
+                        registerButton.prop('disabled', true)
                     }
                 }else{
-                    console.log("or here?")
                     usernameInput.css("border","2px inset red")
                     errorMessage.text(data.invalid)
+                    registerButton.prop('disabled', true)
                 }
-            },
-            error: function(err){console.log(err)}
+            }
             })
     }else{
-        console.log("or here")
         errorMessage.text("Username must be al least 6 characters long")
         usernameInput.css("border","2px inset red")
+        registerButton.prop('disabled', true)
     }
-    console.log(errorMessage.text())
 }
 
 
@@ -84,7 +75,6 @@ function getMentions(){
     $.get("/mentioncount",
     function(data, status){
          var mentionsList = document.getElementsByClassName("mentions")[0]
-         console.log(mentionsList)
          var mentions = data.mentions
          for (mention in mentions){
              var item = document.createElement('li')
