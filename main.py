@@ -133,11 +133,11 @@ def register_user():
 
 @application.get('/mentioncount')
 def mention_count():
-    return dict(mentions=interface.countedMentions)
+    return dict(mentions=interface.get_counted_mentions(db))
 
 @application.get('/hashtagcount')
 def hashtag_count():
-    return dict(hashtags=interface.get_counted_hashtags())
+    return dict(hashtags=interface.get_counted_hashtags(db))
 
 @application.post('/logout')
 def logout():
@@ -146,5 +146,4 @@ def logout():
         users.delete_session(db, user)
     redirect('/', 302)
 if __name__ == '__main__':
-    interface.__init__(db)
     application.run(debug=True, port=8010)

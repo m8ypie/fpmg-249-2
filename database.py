@@ -110,6 +110,19 @@ CREATE TABLE follows (
             FOREIGN KEY(followed) REFERENCES users(nick)
 );
 
+DROP TABLE IF EXISTS hashtags;
+CREATE TABLE hashtags (
+            postid integer,
+            hashtag text,
+            FOREIGN KEY(postid) REFERENCES posts(id)
+);
+
+DROP TABLE IF EXISTS mentions;
+CREATE TABLE mentions (
+            postid integer,
+            mention text,
+            FOREIGN KEY(postid) REFERENCES posts(id)
+);
 
 """
 

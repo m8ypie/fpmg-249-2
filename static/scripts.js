@@ -73,31 +73,33 @@ function verification(usernameInput, passwordInput, registerButton, errorMessage
 
 function getMentions(){
     $.get("/mentioncount",
-    function(data, status){
-         var mentionsList = document.getElementsByClassName("mentions")[0]
-         var mentions = data.mentions
-         for (mention in mentions){
-             var item = document.createElement('li')
-             var a = document.createElement('a')
-             a.appendChild(document.createTextNode(mentions[mention][0]))
-             a.setAttribute("href", "/users/"+mentions[mention][0].replace('@', ''))
-             item.appendChild(a)
-             mentionsList.appendChild(item)
-         }
-    })
+        function(data, status){
+            var mentionsList = document.getElementsByClassName("mentions")[0]
+            var mentions = data.mentions
+            for (mention in mentions){
+                var item = document.createElement('li')
+                var a = document.createElement('a')
+                a.appendChild(document.createTextNode(mentions[mention][0]))
+                a.setAttribute("href", "/users/"+mentions[mention][0].replace('@', ''))
+                item.appendChild(a)
+                mentionsList.appendChild(item)
+            }
+        }
+    )
 }
 
 function getHashtags(){
     $.get("/hashtagcount",
-    function(data, status){
-        var hashtagList = document.getElementsByClassName("hashtags")[0]
-        var hashtags = data.hashtags
-        for(hashtag in hashtags){
-            var item = document.createElement('li')
-            item.appendChild(document.createTextNode(hashtags[hashtag][0]))
-            hashtagList.appendChild(item)
+        function(data, status){
+            var hashtagList = document.getElementsByClassName("hashtags")[0]
+            var hashtags = data.hashtags
+            for(hashtag in hashtags){
+                var item = document.createElement('li')
+                item.appendChild(document.createTextNode(hashtags[hashtag][0]))
+                hashtagList.appendChild(item)
+            }
         }
-    })
+    )
 }
 
 function attemptLogin(){

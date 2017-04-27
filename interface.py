@@ -8,47 +8,6 @@ import re
 import html
 import six
 
-countedMentions = []
-countedHashtags = []
-
-def __init__(db):
-    global countedMentions, countedHashtags
-    regex = re.compile(r'''(?:@)[A-Za-z]+''')
-    cur = db.cursor()
-    cur.execute("""SELECT * FROM posts""")
-    posts = cur.fetchall()
-    reg = r'''((?:@)[A-Za-z]+(\.[A-Za-z]+)?)'''
-    countedMentions = countOccurances(posts, reg)
-    reg = r'''((?:#)[^ <>'"{}|\\^`[\]]*)'''
-    countedHashtags = countOccurances(posts, reg)
-    print(countedHashtags)
-
-
-def countOccurances(posts, reg):
-    mentions = []
-    regex = re.compile(reg)
-    for post in posts:
-        mention = regex.findall(post[3])
-        if len(mention) > 0:
-            for m in mention:
-                if isinstance(m, six.string_types):
-                    mentions.append(m)
-                else:
-                    mentions.append(m[0])
-    counted = count(mentions)
-    return sorted(counted, key=lambda countedMentions: countedMentions[1], reverse=True)
-
-
-def count(mentions):
-    counted = []
-    uniqueMentions = set(mentions)
-    for unique_mention in uniqueMentions:
-        count = (unique_mention, 0)
-        for mention in mentions:
-            if count[0] == mention:
-                count = (count[0], count[1]+1)
-        counted.append(count)
-    return counted
 
 def track(regex, message):
     mentions = []
@@ -58,47 +17,29 @@ def track(regex, message):
             mentions.append(m)
     return mentions
 
-def track_mentions(message):
+def track_mentions(db, message, id):
     global countedMentions
     regex = re.compile(r'''((?:@)[A-Za-z]+(\.[A-Za-z]+)?)''')
     mentions = track(regex, message)
+    cur = db.cursor()
     for mention in mentions:
-        count = 0
-        exists = False
-        for countedMention in countedMentions:
-            if mention[0] == countedMention[0]:
-                exists = True
-                new_mention_count = (countedMention[0], countedMention[1] + 1)
-                countedMentions[count] = new_mention_count
-                break
-            count += 1
-        if exists is False:
-            countedMentions.append((mention, 1))
-    countedMentions = sorted(countedMentions, key=lambda countedMentions: countedMentions[1], reverse=True)
+        print(mention)
+        cur.execute("INSERT INTO mentions (postid, mention) VALUES (?,?)", (id, mention[0]))
+    db.commit()
 
-def track_hashtags(message):
+def track_hashtags(db, message, id):
     global countedHashtags
     regex = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''')
     mentions = track(regex, message)
+    cur = db.cursor()
     for mention in mentions:
-        count = 0
-        exists = False
-        for countedHashtag in countedHashtags:
-            print(mention, countedHashtag[0], ' ')
-            if mention == countedHashtag[0]:
-                exists = True
-                new_mention_count = (countedHashtag[0], countedHashtag[1] + 1)
-                countedHashtags[count] = new_mention_count
-                break
-            count += 1
-        if exists is False:
-            countedHashtags.append((mention, 1))
-    countedHashtags = sorted(countedHashtags, key=lambda countedMentions: countedMentions[1], reverse=True)
+        cur.execute("INSERT INTO hashtags (postid, hashtag) VALUES (?,?)", (id, mention))
+    db.commit()
 
 
-def track_tags(message):
-    track_mentions(message)
-    track_hashtags(message)
+def track_tags(db, message, id):
+    track_mentions(db, message, id)
+    track_hashtags(db, message, id)
 
 def post_to_html(content):
     """Convert a post to safe HTML, quote any HTML code, convert
@@ -160,6 +101,8 @@ def post_list_mentions(db, usernick, limit=50):
     for post in allposts:
         if post[3].find("@"+usernick) > -1:
             mentions.append(post)
+    if len(mentions) > limit:
+        mentions = mentions[:mentions]
     return mentions
 
 
@@ -172,14 +115,36 @@ def post_add(db, usernick, message):
     if len(message) <= 150:
         cur.execute("""INSERT INTO posts (usernick, content) VALUES (?,?)""", (usernick, message))
         db.commit()
-        track_tags(message)
-    return cur.lastrowid
+        id = cur.lastrowid
+        track_tags(db, message, id)
+    return id
 
-def get_counted_hashtags(limit=10):
-    return countedHashtags[:limit]
 
-def get_counted_mentions(limit=10):
-    return countedMentions[:limit]
+def get_counted_hashtags(db,limit=10):
+    cur = db.cursor()
+    cur.execute("""SELECT hashtag 
+                   FROM hashtags 
+                   GROUP BY hashtag 
+                   HAVING COUNT(hashtag) > 1 
+                   ORDER BY COUNT(hashtag) DESC""")
+    hashtags = cur.fetchall()
+    if len(hashtags) > limit:
+        hashtags = hashtags[:limit]
+    return hashtags
+
+
+def get_counted_mentions(db,limit=10):
+    cur = db.cursor()
+    cur.execute("""SELECT mention 
+                   FROM mentions 
+                   GROUP BY mention 
+                   HAVING COUNT(mention) >= 1 
+                   ORDER BY COUNT(mention) DESC""")
+    hashtags = cur.fetchall()
+    if len(hashtags) > limit:
+        hashtags = hashtags[:limit]
+    return hashtags
+
 
 def follow_get(db, usernick):
     """Return the followers of this user as a list of nicks"""
