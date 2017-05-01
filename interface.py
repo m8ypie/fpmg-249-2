@@ -32,6 +32,7 @@ def track_hashtags(db, message, id):
     regex = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''')
     mentions = track(regex, message)
     cur = db.cursor()
+    print(mentions)
     for mention in mentions:
         cur.execute("INSERT INTO hashtags (postid, hashtag) VALUES (?,?)", (id, mention))
     db.commit()
@@ -125,11 +126,11 @@ def get_counted_hashtags(db,limit=10):
     cur.execute("""SELECT hashtag 
                    FROM hashtags 
                    GROUP BY hashtag 
-                   HAVING COUNT(hashtag) > 1 
                    ORDER BY COUNT(hashtag) DESC""")
     hashtags = cur.fetchall()
     if len(hashtags) > limit:
         hashtags = hashtags[:limit]
+    print("sending hashtags: ", hashtags)
     return hashtags
 
 
@@ -138,13 +139,23 @@ def get_counted_mentions(db,limit=10):
     cur.execute("""SELECT mention 
                    FROM mentions 
                    GROUP BY mention 
-                   HAVING COUNT(mention) >= 1 
                    ORDER BY COUNT(mention) DESC""")
     hashtags = cur.fetchall()
     if len(hashtags) > limit:
         hashtags = hashtags[:limit]
+    print("sending mentions: ", hashtags)
     return hashtags
 
+def get_hashtags(db, hashtag, limit=50):
+    cur = db.cursor()
+    cur.execute("""SELECT *
+                   FROM posts
+                   WHERE hashtags.hashtag=?
+                   AND hashtags.postid=posts.id""", hashtag)
+    posts = cur.fetchall()
+    if len(posts) > limit:
+        posts = posts[:limit]
+    return posts
 
 def follow_get(db, usernick):
     """Return the followers of this user as a list of nicks"""

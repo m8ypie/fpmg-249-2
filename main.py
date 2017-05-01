@@ -87,6 +87,11 @@ def mentions(userName):
     dic.update(determineUser())
     return template("mentions.tpl", dic)
 
+@application.route('/hashtags/<hashtag:path>')
+def hashtags(hashtag):
+    posts = appendAvatar(interface.get_hashtags(db, hashtag))
+    return posts
+
 @application.route('/static/<filename:path>')
 def static(filename):
     return static_file(filename=filename, root='static')
