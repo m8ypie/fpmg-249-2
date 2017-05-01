@@ -89,7 +89,8 @@ def mentions(userName):
 
 @application.route('/hashtags/<hashtag:path>')
 def hashtags(hashtag):
-    posts = appendAvatar(interface.get_hashtags(db, hashtag))
+    posts = appendAvatar(interface.get_hashtags(db, "#"+hashtag))
+
     return posts
 
 @application.route('/static/<filename:path>')

@@ -148,11 +148,13 @@ def get_counted_mentions(db,limit=10):
 
 def get_hashtags(db, hashtag, limit=50):
     cur = db.cursor()
-    cur.execute("""SELECT *
-                   FROM posts
-                   WHERE hashtags.hashtag=?
-                   AND hashtags.postid=posts.id""", hashtag)
+    cur.execute("""SELECT id, timestamp, usernick, content
+                   FROM posts, hashtags
+                   WHERE hashtags.hashtag = ? 
+                   AND hashtags.postid = posts.id
+                   """, (hashtag,))
     posts = cur.fetchall()
+    print(posts)
     if len(posts) > limit:
         posts = posts[:limit]
     return posts
