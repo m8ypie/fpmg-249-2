@@ -38,7 +38,7 @@ function verification(usernameInput, passwordInput, registerButton, errorMessage
     usernameInput.css("border","2px inset rgb(0, 0, 0)")
     passwordInput.css("border","2px inset rgb(0, 0, 0)")
     errorMessage.text("")
-    var text = usernameInput.val()
+    var text = usernameInput.val().trim()
     if(text.length > 6){
         $.ajax({
             type:"POST",
@@ -95,7 +95,10 @@ function getHashtags(){
             var hashtags = data.hashtags
             for(hashtag in hashtags){
                 var item = document.createElement('li')
-                item.appendChild(document.createTextNode(hashtags[hashtag][0]))
+                var a = document.createElement('a')
+                a.appendChild(document.createTextNode(hashtags[hashtag][0]))
+                a.setAttribute("href", "/hashtags/"+hashtags[hashtag][0].replace('#', ''))
+                item.appendChild(a)
                 hashtagList.appendChild(item)
             }
         }

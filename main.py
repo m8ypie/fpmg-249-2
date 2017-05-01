@@ -90,8 +90,9 @@ def mentions(userName):
 @application.route('/hashtags/<hashtag:path>')
 def hashtags(hashtag):
     posts = appendAvatar(interface.get_hashtags(db, "#"+hashtag))
-
-    return posts
+    dic = {"loginFailed": "False", "posts": posts}
+    dic.update(determineUser())
+    return template('hashtag.tpl', dic)
 
 @application.route('/static/<filename:path>')
 def static(filename):

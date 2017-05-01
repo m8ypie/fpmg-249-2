@@ -50,7 +50,8 @@ def post_to_html(content):
     content = re.compile(r'''((?:http://)[^ <>'"{}|\\^`[\]]*)''').sub(r"<a href='\1'>\1</a>", content)
     content = re.compile(r'''((?:@)[A-Za-z]+(\.[A-Za-z]+)?)''').sub(r"<a href='/users/\1'>\1</a>", content)
     content = content.replace("/users/@","/users/")
-    content = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''').sub(r"<strong class='hashtag'>\1</strong>", content)
+    content = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''').sub(r"<strong class='hashtag'><a href='/hashtags/\1'>\1</a></strong>", content)
+    content = content.replace("/hashtags/#", "/hashtags/")
     return content
 
 
