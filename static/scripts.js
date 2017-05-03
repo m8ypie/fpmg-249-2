@@ -32,41 +32,46 @@ $(document).ready(function(){
     })
 })
 
+function validationError(field, errorMessage, button, errorField){
+    field.css("border","2px inset red")
+    errorField.text(errorMessage)
+    button.prop('disabled', true)
+}
 
 
 function verification(usernameInput, passwordInput, registerButton, errorMessage) {
     usernameInput.css("border","2px inset rgb(0, 0, 0)")
     passwordInput.css("border","2px inset rgb(0, 0, 0)")
     errorMessage.text("")
-    var text = usernameInput.val().trim()
-    if(text.length > 6){
-        $.ajax({
-            type:"POST",
-            url: "/register/validation",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify({"nick":text}),
-            success: function(data){
-                if(!data.invalid){
-                    passwordInput.css("border","2px inset rgb(0, 0, 0)")
-                    if(passwordInput.val().length > 8){
-                        registerButton.prop('disabled', false)
+    var regex = /^[a-z0-9]+$/i;
+    var text = usernameInput.val()
+    if(regex.test(text)){
+        if(text.length >= 4){
+            $.ajax({
+                type:"POST",
+                url: "/register/validation",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({"nick":text}),
+                success: function(data){
+                    if(!data.invalid){
+                        passwordInput.css("border","2px inset rgb(0, 0, 0)")
+                        var pw = passwordInput.val() 
+                        if(pw.length >= 6){
+                            registerButton.prop('disabled', false)
+                        }else{
+                            validationError(passwordInput, "Password must be at least 6 characters long", registerButton, errorMessage)
+                        }
                     }else{
-                        passwordInput.css("border","2px inset red")
-                        errorMessage.text("Password must be at least 8 characters long")
-                        registerButton.prop('disabled', true)
+                        validationError(usernameInput, data.invalid, registerButton, errorMessage)
                     }
-                }else{
-                    usernameInput.css("border","2px inset red")
-                    errorMessage.text(data.invalid)
-                    registerButton.prop('disabled', true)
                 }
-            }
-            })
+                })
+        }else{
+            validationError(usernameInput, "Username must be at least 4 characters long", registerButton, errorMessage)
+        }
     }else{
-        errorMessage.text("Username must be al least 6 characters long")
-        usernameInput.css("border","2px inset red")
-        registerButton.prop('disabled', true)
+        validationError(usernameInput, "Username contains invlaid characters", registerButton, errorMessage)
     }
 }
 
@@ -124,14 +129,3 @@ function main(){
 }
 
 main()
-
-//        <ul class='mentions'>
-//            %for mention in mentions:
-//                <li href="/users/{{mention[0]}}">{{mention[1]}}</li>
-//            %end
-//        </ul>
-//        <ul class='hashtags'>
-//            %for hashtag in hashtags:
-//                <li href='#'>{{hashtag}}</li>
-//            %end
-//        </ul>

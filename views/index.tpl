@@ -22,8 +22,7 @@
         <div class="nav">
             <ul>
                 <li class="home"><a href="/">Home</a></li>
-                <li class="all"><a href="#">All Posts</a></li>
-                <li class="users"><a href="#">Users</a></li>
+                <li class="users"><a href="/users">Users</a></li>
                 <li class="about"><a href="/about">About</a></li>
                 <li class="login">
                         %if logged_in=="True":

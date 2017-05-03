@@ -3,7 +3,7 @@
     %for post in posts:
         <div class='psst'>
             <div class='user'>
-                <img src={{post[3]}}, class='profile'/>
+                <img src={{post[3]}} class='profile'/>
                 <div class='name'><a href="/users/{{post[1]}}">{{post[1]}}</a></div>
             </div>
             <div class="timestamp">{{post[0]}}</div>

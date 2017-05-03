@@ -4,7 +4,7 @@ Created on Mar 26, 2012
 @author: steve
 '''
 
-import bottle, hashlib, uuid
+import bottle, hashlib, uuid, re
 from http.cookies import SimpleCookie
 
 # this variable MUST be used as the name for the cookie used by this application
@@ -25,6 +25,18 @@ def valid_user(db, usernick):
     user = cur.fetchone()
     return user is not None
 
+def get_chunks(l,n):
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
+def list_users(db, limit=50):
+    cur = db.cursor()
+    cur.execute("SELECT nick, avatar FROM users")
+    users = cur.fetchall()
+    if len(users) > limit:
+        users = users[:limit]
+    return list(get_chunks(users, 4))
 
 def getSession(db, usernick):
     cur = db.cursor()
@@ -33,22 +45,27 @@ def getSession(db, usernick):
 
 def getUser(db, session_id):
     cur = db.cursor()
+    cur.execute("SELECT * FROM sessions")
     cur.execute("SELECT usernick FROM sessions WHERE sessionid = (?)", (session_id,))
     return cur.fetchone()
 
 def createSession(db, usernick):
     session_id = str(uuid.uuid1())
     cur = db.cursor()
-    cur.execute("INSERT INTO sessions (sessionid,usernick) VALUES (?,?)", (session_id, usernick))
+    cur.execute("INSERT INTO sessions (sessionid, usernick) VALUES (?,?)", (session_id, usernick))
     db.commit()
     return session_id
 
 def user_add(db, password, nick, avatar):
     """Add a new user to the database"""
-    hashedpw = hashlib.sha1(password.encode()).hexdigest()
-    cur = db.cursor()
-    cur.exeute("""INSERT INTO users (nick, password, avatar) VALUES (?,?,?)""", (nick, hashedpw, avatar))
-    db.commit()
+    regex = re.compile("/^[a-z0-9]+$/i")
+    match = regex.match(nick)
+    if match is not None:
+        hashedpw = hashlib.sha1(password.encode()).hexdigest()
+        cur = db.cursor()
+        cur.execute("""INSERT INTO users (nick, password, avatar) VALUES (?,?,?)""", (nick, hashedpw, avatar))
+        db.commit()
+
 
 
 def generate_session(db, usernick):
@@ -65,7 +82,7 @@ def generate_session(db, usernick):
         else:
             session_id = session_id[0]
         response = bottle.response
-        response.set_cookie(COOKIE_NAME, str(session_id))
+        response.set_cookie(COOKIE_NAME, str(session_id), path='/')
     return response
 
 
@@ -74,6 +91,8 @@ def delete_session(db, usernick):
     cur = db.cursor()
     cur.execute("DELETE FROM sessions WHERE usernick=?", (usernick,))
     db.commit()
+
+
 
 def session_user(db):
     """try to
@@ -85,16 +104,4 @@ def session_user(db):
         if user is not None:
             user = user[0]
     return user
-
-def get_cookie_value(cookiename):
-    """Stolen from given test cases (thanks Steve) Get the value of a cookie from the bottle response headers"""
-    response = bottle.request
-    headers = response.headerlist
-    for h,v in headers:
-        if h == 'Set-Cookie':
-            cookie = SimpleCookie(v)
-            if cookiename in cookie:
-                return cookie[cookiename].value
-    return None
-
 

@@ -1,7 +1,6 @@
 __author__ = 'Steve Cassidy'
 
 from bottle import Bottle, template, static_file, request, response, HTTPError, redirect
-from pprint import pprint
 import interface
 import string
 import users
@@ -12,33 +11,17 @@ COOKIE_NAME = 'sessionid'
 application = Bottle()
 db = COMP249Db()
 
-def constructPost(post, pic="/static/psst.png"):
-    t = string.Template("""
-        <div class='psst'>
-            <div class='user'>
-                <img src="$source", class='profile'/>
-                <div class='name'><a href="/users/$userName">$userName</a></div>
-            </div> 
-            <div class="timestamp">$timestamp</div>
-            <div class="message">$content</div>
-        </div>
-    """)
-    data = {
-        "source": pic,
-        "timestamp": post[1],
-        "userName": post[2],
-        "content": interface.post_to_html(post[3])
-    }
-    return t.substitute(data)
+def determinePicture(pic):
+    if pic is None or len(pic) < 1:
+        pic = "/static/psst.png"
+    return pic
 
 def determineUser():
     user = users.session_user(db)
     result = {"logged_in": "False"}
     if user is not None:
         users.generate_session(db, user)
-        pic = interface.user_get(db, user)[2]
-        if pic is None:
-            pic = "/static/psst.png"
+        pic = determinePicture(interface.user_get(db, user)[2])
         result = {"logged_in": "True", "nickname": "Logged in as "+user, "username": user, "picture": pic}
     return result
 
@@ -46,9 +29,7 @@ def determineUser():
 def appendAvatar(posts):
     newposts = []
     for post in posts:
-        pic = interface.user_get(db, post[2])[2]
-        if pic is None:
-            pic = "/static/psst.png"
+        pic = determinePicture(interface.user_get(db, post[2])[2])
         newposts.append((post[1], post[2], interface.post_to_html(post[3]), pic))
     return newposts
 
@@ -61,10 +42,27 @@ def index(dic=None):
     dic.update(determineUser())
     return template("main.tpl", dic)
 
+@application.route('/users')
+def listUsers():
+    user = users.list_users(db)
+    print("here:",user)
+    dic = {
+        "loginFailed": "False",
+        "users": user
+    }
+    dic.update(determineUser())
+    print(dic)
+    return template("listUsers.tpl", dic)
+
 @application.route('/users/<userName:path>')
 def userPage(userName):
     posts = appendAvatar(interface.post_list(db, userName))
-    dic = {"loginFailed": "False","posts": posts, "name": userName, "userpic": interface.user_get(db, userName)[2]}
+    dic = {
+            "loginFailed": "False",
+            "posts": posts,
+            "name": userName,
+            "userpic": determinePicture(interface.user_get(db, userName)[2])
+          }
     dic.update(determineUser())
     return template("user.tpl", dic)
 
@@ -98,6 +96,13 @@ def hashtags(hashtag):
 def static(filename):
     return static_file(filename=filename, root='static')
 
+@application.post('/register/user')
+def register_user():
+    username = request.forms.get("nick")
+    password = request.forms.get("password")
+    avatar = request.forms.get("avatar")
+    users.user_add(db, password, username, avatar)
+    return login()
 
 @application.post('/login')
 def login():
@@ -129,14 +134,6 @@ def validation():
     else:
         response.status = 200
     return result
-
-@application.post('/register/user')
-def register_user():
-    username = request.forms.get("nick")
-    password = request.forms.get("password")
-    avatar = request.forms.get("avatar")
-    users.user_add(db, password, username, avatar)
-    redirect("/login")
 
 @application.get('/mentioncount')
 def mention_count():
