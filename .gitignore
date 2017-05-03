@@ -5,4 +5,4 @@ target
 .history
 .sonar
 *.db
-__pycache__
+__pycache__*
