@@ -58,9 +58,13 @@ def createSession(db, usernick):
 
 def user_add(db, password, nick, avatar):
     """Add a new user to the database"""
-    regex = re.compile("/^[a-z0-9]+$/i")
-    match = regex.match(nick)
-    if match is not None:
+    regex = re.compile("^[a-z0-9]+", re.IGNORECASE)
+    httpregex = re.compile(r'''(https?://.*.(?:png|jpg))''')
+    print((httpregex.match(avatar) is not None))
+    valid = ((regex.match(nick) is not None) & ((len(avatar) < 1) | (httpregex.match(avatar) is not None)))
+    if len(avatar) < 1:
+        avatar = "/static/psst.png"
+    if valid:
         hashedpw = hashlib.sha1(password.encode()).hexdigest()
         cur = db.cursor()
         cur.execute("""INSERT INTO users (nick, password, avatar) VALUES (?,?,?)""", (nick, hashedpw, avatar))

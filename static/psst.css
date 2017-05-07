@@ -43,10 +43,9 @@ html {
 }
 
 .sidenav li {
-    width: 10px;
+    width: 86px;
     float:left;
     border-bottom: none;
-    margin-right: 80px;
     height: 10px;
     line-height: 50px;
     font-size: 1.2em;
@@ -71,6 +70,8 @@ html {
 
 .sidenav a:hover {
   background-color: #005f5f;
+  cursor: pointer;
+    width: 100%;
 }
 
 .mentions li {
@@ -105,15 +106,26 @@ html {
 
 .login {
     float: right;
-    margin-right: 100px;
+    margin-right: 300px;
+    display: inline-block;
+    padding-right: 100px;
 }
 
 .loginform {
     display: none;
     background-color:#87CEEB;
+    width: 180px;
+    margin-top: -1px;
+    box-shadow: 0 3px 2px rgba(0,0,0,0.25);
 }
+
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+    background-color: white !important;
+}
+
 .logoutform {
     display: none;
+    margin-top:-1px;
     background-color:#87CEEB;
 }
 
@@ -162,6 +174,43 @@ html {
 
 .registerText {
     font-size: 0.6em;
+}
+
+.registerList {
+    width: 100px;
+    list-style-type: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.registerList li {
+    padding-bottom: 30px;
+}
+
+.registerList li lable {
+    margin-right: 10px;
+}
+
+.inputError {
+    width: 200px
+}
+
+button {
+    padding:5px 5px; 
+    background:#d5e8ef; 
+    border:50px;
+    border-color: black;
+    cursor:pointer;
+}
+
+.welcome {
+    margin-left: 270px;
+    margin-top: 50px;
+    font-family: Lucida Console;
+    font-weight: bold;
+    font-size: 20px;
+    color: #87CEEB;
 }
 
 /* text messages ===================================================================================================== */

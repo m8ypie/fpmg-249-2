@@ -12,10 +12,12 @@ $(document).ready(function(){
     if(usernameInput){
         var errorMessage = $(".inputError")
         var passwordInput = $(".registerPassword")
+        var avatarInput = $(".registerAvatar")
         var registerButton = $(".registerButton")
         registerButton.prop('disabled', true)
-        usernameInput.change(function(){verification(usernameInput, passwordInput, registerButton, errorMessage)})
-        passwordInput.change(function(){verification(usernameInput, passwordInput, registerButton, errorMessage)})
+        usernameInput.change(function(){verification(usernameInput, passwordInput, avatarInput, registerButton, errorMessage)})
+        passwordInput.change(function(){verification(usernameInput, passwordInput, avatarInput, registerButton, errorMessage)})
+        avatarInput.change(function(){verification(usernameInput, passwordInput, avatarInput, registerButton, errorMessage)})
     }
 
     $(".mentionsTrigger").click(function(){
@@ -38,13 +40,61 @@ function validationError(field, errorMessage, button, errorField){
     button.prop('disabled', true)
 }
 
-
-function verification(usernameInput, passwordInput, registerButton, errorMessage) {
-    usernameInput.css("border","2px inset rgb(0, 0, 0)")
-    passwordInput.css("border","2px inset rgb(0, 0, 0)")
+/**
+ * Shadow the validation within the backend, so the user knows immediately the error.
+ * 
+ * @param {*} usernameInput 
+ * @param {*} passwordInput 
+ * @param {*} registerButton 
+ * @param {*} errorMessage 
+ */
+function verification(usernameInput, passwordInput, avatarInput, registerButton, errorMessage) {
+    usernameInput.css("border","1px inset rgb(0, 0, 0)")
+    passwordInput.css("border","1px inset rgb(0, 0, 0)")
+    avatarInput.css("border","1px inset rgb(0, 0, 0)")
     errorMessage.text("")
-    var regex = /^[a-z0-9]+$/i;
     var text = usernameInput.val()
+    isValidUsername(text, function(error){
+        if(error){
+            validationError(usernameInput, error, registerButton, errorMessage)
+        } else {
+            passwordInput.css("border","1px inset rgb(0, 0, 0)")
+            var pw = passwordInput.val() 
+            if(pw.length >= 6){
+                avatarInput.css("border","1px inset rgb(0, 0, 0)")
+                console.log("hi ", isValidAvatar(avatarInput.val()))
+                if(isValidAvatar(avatarInput.val())){
+                    registerButton.prop('disabled', false)
+                }else{
+                    validationError(avatarInput, "Invalid url, must point to either png or jpg", registerButton, errorMessage)
+                }
+            }else{
+                validationError(passwordInput, "Password must be at least 6 characters long", registerButton, errorMessage)
+            }
+        }
+    })               
+}
+
+
+function isValidAvatar(avatarInput){
+    var httpRegex = /(https?:\/\/.*\.(?:png|jpg))/i
+    var valid = false
+    console.log(avatarInput.length < 1)
+    if(avatarInput.length < 1){
+        console.log("HERE")
+        valid = true
+    }else{
+        if(httpRegex.test(avatarInput)){
+            valid = true
+        }else{
+            valid = false
+        }
+    }
+    return valid
+}
+
+function isValidUsername(text, cb){
+    var regex = /^[a-z0-9]+$/i;
     if(regex.test(text)){
         if(text.length >= 4){
             $.ajax({
@@ -55,26 +105,19 @@ function verification(usernameInput, passwordInput, registerButton, errorMessage
                 data: JSON.stringify({"nick":text}),
                 success: function(data){
                     if(!data.invalid){
-                        passwordInput.css("border","2px inset rgb(0, 0, 0)")
-                        var pw = passwordInput.val() 
-                        if(pw.length >= 6){
-                            registerButton.prop('disabled', false)
-                        }else{
-                            validationError(passwordInput, "Password must be at least 6 characters long", registerButton, errorMessage)
-                        }
+                        cb()
                     }else{
-                        validationError(usernameInput, data.invalid, registerButton, errorMessage)
+                        cb(data.invalid)
                     }
                 }
-                })
+            })
         }else{
-            validationError(usernameInput, "Username must be at least 4 characters long", registerButton, errorMessage)
+            cb("Username must be at least 4 characters long")
         }
     }else{
-        validationError(usernameInput, "Username contains invlaid characters", registerButton, errorMessage)
+        cb("Username contains invlaid characters")
     }
 }
-
 
 function getMentions(){
     $.get("/mentioncount",

@@ -11,25 +11,20 @@ COOKIE_NAME = 'sessionid'
 application = Bottle()
 db = COMP249Db()
 
-def determinePicture(pic):
-    if pic is None or len(pic) < 1:
-        pic = "/static/psst.png"
-    return pic
-
 def determineUser():
     user = users.session_user(db)
     result = {"logged_in": "False"}
     if user is not None:
         users.generate_session(db, user)
-        pic = determinePicture(interface.user_get(db, user)[2])
-        result = {"logged_in": "True", "nickname": "Logged in as "+user, "username": user, "picture": pic}
+        pic = interface.user_get(db,user)[2]
+        result = {"logged_in": "True", "nickname": user, "username": user, "picture": pic}
     return result
 
 
-def appendAvatar(posts):
+def get_recent_posts(posts):
     newposts = []
     for post in posts:
-        pic = determinePicture(interface.user_get(db, post[2])[2])
+        pic = interface.user_get(db, post[2])[2]
         newposts.append((post[1], post[2], interface.post_to_html(post[3]), pic))
     return newposts
 
@@ -37,7 +32,7 @@ def appendAvatar(posts):
 def index(dic=None):
     if dic is None:
         dic = {"loginFailed": ""}
-    posts = appendAvatar(interface.post_list(db, None))
+    posts = get_recent_posts(interface.post_list(db, None))
     dic.update({"posts": posts})
     dic.update(determineUser())
     return template("main.tpl", dic)
@@ -56,12 +51,12 @@ def listUsers():
 
 @application.route('/users/<userName:path>')
 def userPage(userName):
-    posts = appendAvatar(interface.post_list(db, userName))
+    posts = get_recent_posts(interface.post_list(db, userName))
     dic = {
             "loginFailed": "False",
             "posts": posts,
             "name": userName,
-            "userpic": determinePicture(interface.user_get(db, userName)[2])
+            "userpic": interface.user_get(db, userName)[2]
           }
     dic.update(determineUser())
     return template("user.tpl", dic)
@@ -80,14 +75,14 @@ def register():
 
 @application.route('/mentions/<userName:path>')
 def mentions(userName):
-    posts = appendAvatar(interface.post_list_mentions(db, userName))
+    posts = get_recent_posts(interface.post_list_mentions(db, userName))
     dic = {"loginFailed": "False", "posts": posts, "name": userName, "userpic": interface.user_get(db, userName)[2]}
     dic.update(determineUser())
     return template("mentions.tpl", dic)
 
 @application.route('/hashtags/<hashtag:path>')
 def hashtags(hashtag):
-    posts = appendAvatar(interface.get_hashtags(db, "#"+hashtag))
+    posts = get_recent_posts(interface.get_hashtags(db, "#" + hashtag))
     dic = {"loginFailed": "False", "posts": posts}
     dic.update(determineUser())
     return template('hashtag.tpl', dic)

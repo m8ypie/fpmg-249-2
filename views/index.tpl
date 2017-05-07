@@ -26,6 +26,7 @@
                 <li class="about"><a href="/about">About</a></li>
                 <li class="login">
                         %if logged_in=="True":
+                            <!-- Logged in as {{nickname}}-->
                             <a class="logoutToggle" href="#">{{nickname}}</a>
                             <form id="logoutform" class="logoutform" action="/logout" method="post"/>
                                 <button type="submit">Logout</button>
@@ -34,10 +35,10 @@
                             <a class="loginToggle" href="#">Login</a>
                             <form id="loginform" class="loginform" action="/login" method="post">
                                 <label><b>Username</b></label>
-                                <input type="text" placeholder="Enter Username" name="nick" required>
+                                <input class="loginInput" type="text" placeholder="Enter Username" name="nick" required>
 
                                 <label><b>Password</b></label>
-                                <input type="password" placeholder="Enter Password" name="password" required>
+                                <input class="loginInput" type="password" placeholder="Enter Password" name="password" required>
 
                                 <button type="submit">Login</button>
                                 <div class="registerText">Not a member? <a href="/register">Register here.</a></div>
@@ -47,6 +48,9 @@
                 </li>
             </ul>
         </div>
+        %if logged_in=="False":
+            <div class="welcome">Welcome to psst</div>
+        %end
     </section>
     <div class='sidebar'>
         <div class="sidetitle">Whats trending?</div>
