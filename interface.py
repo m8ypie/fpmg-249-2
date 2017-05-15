@@ -18,7 +18,6 @@ def track(regex, message):
     return mentions
 
 def track_mentions(db, message, id):
-    global countedMentions
     regex = re.compile(r'''((?:@)[A-Za-z]+(\.[A-Za-z]+)?)''')
     mentions = track(regex, message)
     cur = db.cursor()
@@ -28,7 +27,6 @@ def track_mentions(db, message, id):
     db.commit()
 
 def track_hashtags(db, message, id):
-    global countedHashtags
     regex = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''')
     mentions = track(regex, message)
     cur = db.cursor()
