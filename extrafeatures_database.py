@@ -102,7 +102,7 @@ class COMP249Db:
         hashtags = [
             (1, '#ox'), (1, '#mtzw'),
             (2, '#ync'), (3, '#sre'),
-            (3, '#ax'),  (3, '#cvrwu'),
+            (3, '#ax'),  (3, '#ax'),
             (4, '#cfsidisk'),  (4, '#gjyep'),
             (5, '#gye'), (6, '#swgsdd'),
             (7, '#rucaecv'), (8, '#nrurcdrbq'),
