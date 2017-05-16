@@ -100,11 +100,11 @@ class COMP249Db:
         hashtag_cmd = "INSERT INTO hashtags (postid, hashtag) VALUES (?,?)"
         database.COMP249Db.fixed_data(self)
         hashtags = [
-            (1, '#ox'), (1, '#mtzw'),
-            (2, '#ync'), (3, '#sre'),
+            (1, '#ax'), (1, '#ax'),
+            (2, '#ync'), (3, '#ync'),
             (3, '#ax'),  (3, '#ax'),
-            (4, '#cfsidisk'),  (4, '#gjyep'),
-            (5, '#gye'), (6, '#swgsdd'),
+            (4, '#ync'),  (4, '#aa'),
+            (5, '#aa'), (6, '#swgsdd'),
             (7, '#rucaecv'), (8, '#nrurcdrbq'),
             (8, '#gquax'), (8, '#zocpybi')
         ]
