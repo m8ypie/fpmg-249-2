@@ -7,7 +7,7 @@ import users, interface
 from bottle import request, response
 
 
-class Test(unittest.TestCase):
+class Extra_features_unit(unittest.TestCase):
 
     def setUp(self):
         # open an in-memory database for testing

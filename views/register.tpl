@@ -1,6 +1,6 @@
 % rebase("index.tpl")
 <section class="messaging">
-    <form class="register" action="/register/user" method="post">
+    <form class="register" id="register" action="/register/user" method="post">
     <ul class="registerList">
         <li>
             <label><b>Username*</b></label>

@@ -40,7 +40,7 @@ def index(dic=None):
 @application.route('/users')
 def listUsers():
     user = users.list_users(db)
-    print("here:",user)
+    print("here:", user)
     dic = {
         "loginFailed": "False",
         "users": user
