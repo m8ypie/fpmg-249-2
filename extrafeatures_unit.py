@@ -1,5 +1,5 @@
 import unittest
-
+import hashlib
 from extrafeatures_database import COMP249Db
 
 # import the modules to be tested
@@ -48,4 +48,64 @@ class Test(unittest.TestCase):
             self.assertEqual(counted_hashtag[0], ordered_hashtag)
 
     "TODO - user login"
-    "TODO - user list"
+
+    def test_user_valid_login(self):
+        user = "test1"
+        pw = "pwtest1"
+        users.user_add(self.db, pw, user, "")
+        cmd = "SELECT * FROM users WHERE nick = ?"
+        cur = self.db.cursor()
+        cur.execute(cmd, (user,))
+        registered_user = cur.fetchall()
+        self.assertEqual(len(registered_user), 1)
+        registered_user = registered_user[0]
+        self.assertEqual(registered_user[0], user)
+        self.assertEqual(registered_user[1], hashlib.sha1(pw.encode()).hexdigest())
+        self.assertEqual(registered_user[2], "/static/psst.png")
+
+    def test_user_valid_image(self):
+        user = "test1"
+        pw = "pwtest1"
+        url = "https://upload.wikimedia.org/wikipedia/commons/1/1a/Image_upload_test.jpg"
+        users.user_add(self.db, pw, user, url)
+        cmd = "SELECT * FROM users WHERE nick = ?"
+        cur = self.db.cursor()
+        cur.execute(cmd, (user,))
+        registered_user = cur.fetchall()
+        self.assertEqual(len(registered_user), 1)
+        registered_user = registered_user[0]
+        self.assertEqual(registered_user[0], user)
+        self.assertEqual(registered_user[1], hashlib.sha1(pw.encode()).hexdigest())
+        self.assertEqual(registered_user[2], url)
+
+    def test_user_invalid_login_user_exists(self):
+        user = "Bobalooba"
+        pw = "pwtest1"
+        users.user_add(self.db, pw, user, "")
+        users.user_add(self.db, pw, user, "")
+        cmd = "SELECT * FROM users WHERE nick = ?"
+        cur = self.db.cursor()
+        cur.execute(cmd, (user,))
+        registered_user = cur.fetchall()
+        self.assertEqual(len(registered_user), 1)
+
+    def test_user_invalid_login_illegal_username(self):
+        user = "test3>>???>?"
+        pw = "pwtest1"
+        users.user_add(self.db, pw, user, "")
+        cmd = "SELECT * FROM users WHERE nick = ?"
+        cur = self.db.cursor()
+        cur.execute(cmd, (user,))
+        registered_user = cur.fetchall()
+        self.assertEqual(len(registered_user), 0)
+
+    def test_user_invalid_login_illegal_url(self):
+        user = "Bobalooba"
+        pw = "pwtest1"
+        url = "https://upload.wikimedia.org/wikipedia/commons/1/1a/Image_upload_test"
+        users.user_add(self.db, pw, user, url)
+        cmd = "SELECT * FROM users WHERE nick = ?"
+        cur = self.db.cursor()
+        cur.execute(cmd, (user,))
+        registered_user = cur.fetchall()
+        self.assertEqual(len(registered_user), 0)

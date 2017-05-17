@@ -60,8 +60,9 @@ def user_add(db, password, nick, avatar):
     """Add a new user to the database"""
     regex = re.compile("^[a-z0-9]+", re.IGNORECASE)
     httpregex = re.compile(r'''(https?://.*.(?:png|jpg))''')
-    print((httpregex.match(avatar) is not None))
-    valid = ((regex.match(nick) is not None) & ((len(avatar) < 1) | (httpregex.match(avatar) is not None)))
+    valid = ((not valid_user(db, nick)) & (regex.fullmatch(nick) is not None) & ((len(avatar) < 1) | (httpregex.fullmatch(avatar) is not None)))
+    print(nick)
+    print(regex.match(nick) is not None)
     if len(avatar) < 1:
         avatar = "/static/psst.png"
     if valid:
