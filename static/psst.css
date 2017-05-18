@@ -233,6 +233,21 @@ button {
     position: relative;
 }
 
+#you-page {
+    width: auto;
+    position: relative;
+    margin-bottom: 50px;
+    background-color: #d5e8ef;
+}
+
+#you-page .user {
+    border-right-width: thin;
+    border-right-style: none;
+    width: 116px;
+    height: 125px;
+    float: left;
+}
+
 #you .user {
     border-right-style: solid;
     border-right-color: #87CEEB;

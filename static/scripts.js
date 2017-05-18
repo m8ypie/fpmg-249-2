@@ -34,13 +34,27 @@ $(document).ready(function(){
     })
 })
 
+/**
+ * Writes a validation error to given field and disables the submit button
+ * @param {*} field Field to highlight
+ * @param {*} errorMessage Error message to write
+ * @param {*} button Button to diable
+ * @param {*} errorField Field to write to
+ */
 function validationError(field, errorMessage, button, errorField){
     field.css("border","2px inset red")
     errorField.text(errorMessage)
     button.prop('disabled', true)
 }
 
-
+/**
+ * Verifys that all fields written to on registration field conform to expectations.
+ * @param {*} usernameInput Username field input
+ * @param {*} passwordInput Password field input
+ * @param {*} avatarInput Avatar field input
+ * @param {*} registerButton Register button
+ * @param {*} errorMessage Error field to write to
+ */
 function verification(usernameInput, passwordInput, avatarInput, registerButton, errorMessage) {
     usernameInput.css("border","1px inset rgb(0, 0, 0)")
     passwordInput.css("border","1px inset rgb(0, 0, 0)")
@@ -68,7 +82,10 @@ function verification(usernameInput, passwordInput, avatarInput, registerButton,
     })               
 }
 
-
+/**
+ * Checks that the image link provided is a valid link to an image
+ * @param {string} avatarInput The link
+ */
 function isValidAvatar(avatarInput){
     var httpRegex = /(https?:\/\/.*\.(?:png|jpg))/i
     var valid = false
@@ -86,6 +103,11 @@ function isValidAvatar(avatarInput){
     return valid
 }
 
+/**
+ * Checks that the username is a valid username
+ * @param {string} text username 
+ * @param {function} cb callback function
+ */
 function isValidUsername(text, cb){
     var regex = /^[a-z0-9]+$/i;
     if(regex.test(text)){
@@ -112,6 +134,9 @@ function isValidUsername(text, cb){
     }
 }
 
+/**
+ * Responsible for hitting mention endpoint and serving the trending mentions to the html
+ */
 function getMentions(){
     $.get("/mentioncount",
         function(data, status){
@@ -129,6 +154,9 @@ function getMentions(){
     )
 }
 
+/**
+ * Responsible for hitting hashtag endpoint and serving the trending hashtags to the html
+ */
 function getHashtags(){
     $.get("/hashtagcount",
         function(data, status){

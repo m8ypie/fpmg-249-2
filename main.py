@@ -71,7 +71,7 @@ def list_users():
     return template("listUsers.tpl", dic)
 
 
-@application.route('/users/<userName:path>')
+@application.route('/users/<user_name:path>')
 def user_page(user_name):
     """ Gets user page with all recent posts
     :param user_name: The username of the user
@@ -108,7 +108,7 @@ def register():
     return template("register.tpl", dic)
 
 
-@application.route('/mentions/<userName:path>')
+@application.route('/mentions/<user_name:path>')
 def mentions(user_name):
     """ Page that contains all posts with the given mention
     :param user_name: The username used in the mention

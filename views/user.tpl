@@ -1,6 +1,6 @@
 % rebase("index.tpl")
 <section class="messaging">
-    <div class="psst", id="you">
+    <div class="psst", id="you-page">
         <div class='user'>
             <img class='profile', src="{{userpic}}"/>
             <div class='name'>{{name}}</div>
