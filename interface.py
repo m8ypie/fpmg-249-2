@@ -35,7 +35,6 @@ def track_mentions(db, message, id):
     mentions = track(regex, message)
     cur = db.cursor()
     for mention in mentions:
-        print(mention)
         cur.execute("INSERT INTO mentions (postid, mention) VALUES (?,?)", (id, mention[0]))
     db.commit()
 
@@ -50,7 +49,6 @@ def track_hashtags(db, message, id):
     regex = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''')
     mentions = track(regex, message)
     cur = db.cursor()
-    print(mentions)
     for mention in mentions:
         cur.execute("INSERT INTO hashtags (postid, hashtag) VALUES (?,?)", (id, mention))
     db.commit()
@@ -162,6 +160,7 @@ def post_add(db, usernick, message):
 
     Return a the id of the newly created post or None if there was a problem"""
     cur = db.cursor()
+    id = None
     if len(message) <= 150:
         cur.execute("""INSERT INTO posts (usernick, content) VALUES (?,?)""", (usernick, message))
         db.commit()
@@ -218,7 +217,6 @@ def get_hashtags(db, hashtag, limit=50):
                    AND hashtags.postid = posts.id
                    """, (hashtag,))
     posts = cur.fetchall()
-    print(posts)
     if len(posts) > limit:
         posts = posts[:limit]
     return posts

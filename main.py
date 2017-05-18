@@ -67,7 +67,6 @@ def list_users():
         "users": user
     }
     dic.update(determine_user())
-    print(dic)
     return template("listUsers.tpl", dic)
 
 
