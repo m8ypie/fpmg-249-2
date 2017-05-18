@@ -9,6 +9,20 @@ import bottle
 
 bottle.debug(True)
 
+extraTables =""" DROP TABLE IF EXISTS hashtags;
+CREATE TABLE hashtags (
+            postid integer,
+            hashtag text,
+            FOREIGN KEY(postid) REFERENCES posts(id)
+);
+
+DROP TABLE IF EXISTS mentions;
+CREATE TABLE mentions (
+            postid integer,
+            mention text,
+            FOREIGN KEY(postid) REFERENCES posts(id)
+);"""
+
 class Extra_features_functional(unittest.TestCase):
 
     def setUp(self):
@@ -17,6 +31,7 @@ class Extra_features_functional(unittest.TestCase):
         self.db = COMP249Db()
         self.db.create_tables()
         self.db.sample_data(random=False)
+        self.db.conn.executescript(extraTables)
         self.users = self.db.users
         self.posts = self.db.posts
 
@@ -54,6 +69,10 @@ class Extra_features_functional(unittest.TestCase):
         return response
 
     def test_create_user_and_login(self):
+        """As a vistor to the site,
+        When I provide a valid username and password for registration
+        Then I should be registered and logged in with those details
+        """
         user = "test12"
         self.doRegister(user, "password123", "")
         mainPage = self.app.get("/")
@@ -62,6 +81,10 @@ class Extra_features_functional(unittest.TestCase):
         self.assertIn("Logged in as %s" % user, mainPage)
 
     def test_create_invalid_user(self):
+        """As a vistor to the site,
+        When I provide a invalid username and password for registration
+        Then I should not be registered
+        """
         user = "test12???>?>?"
         self.doRegister(user, "bihsdgfuisd", "")
         mainPage = self.app.get("/")
@@ -69,6 +92,10 @@ class Extra_features_functional(unittest.TestCase):
         self.assertNotIn(users.COOKIE_NAME, self.app.cookies)
 
     def test_create_user_check_listing(self):
+        """As a vistor to the site,
+        When I provide a valid username and password for registration
+        Then I should included in the users page
+        """
         user = "test12"
         self.doRegister(user, "password123", "")
         userPage = self.app.get("/users")
@@ -78,6 +105,10 @@ class Extra_features_functional(unittest.TestCase):
         self.assertIn(profile_pic, userPage)
 
     def test_mention_trending(self):
+        """As a user to the site,
+        When I messages containing mentions
+        Then it should affect the trending information
+        """
         user = "test12"
         self.doRegister(user, "password123", "")
         self.makePost("@Mandible @Mandible @Mandible @Mandible ...u suk")
@@ -87,6 +118,10 @@ class Extra_features_functional(unittest.TestCase):
         self.assertIn('["@Mandible"], ["@Bobalooba"], ["@Barfoo"]', mentioncount)
 
     def test_hashtag_trending(self):
+        """As a user to the site,
+        When I messages containing hashtags
+        Then it should affect the trending information
+        """
         user = "test12"
         self.doRegister(user, "password123", "")
         self.makePost("#MandibleSuks #MandibleSuks #MandibleSuks #MandibleSuks")

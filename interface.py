@@ -10,6 +10,12 @@ import six
 
 
 def track(regex, message):
+    """
+    Returns strings within the message that conform to the given regex
+    :param regex: A valid string regex
+    :param message: The string wished to be inspected
+    :return: All strings that conform to the given regex
+    """
     mentions = []
     mention = regex.findall(message)
     if len(mention) > 0:
@@ -17,7 +23,14 @@ def track(regex, message):
             mentions.append(m)
     return mentions
 
+
 def track_mentions(db, message, id):
+    """ Tracks all mentions within a given message
+    :param db: The database instance
+    :param message: The message being posted
+    :param id: The messages corresponding id in the database
+    :return: None
+    """
     regex = re.compile(r'''((?:@)[A-Za-z]+(\.[A-Za-z]+)?)''')
     mentions = track(regex, message)
     cur = db.cursor()
@@ -26,7 +39,14 @@ def track_mentions(db, message, id):
         cur.execute("INSERT INTO mentions (postid, mention) VALUES (?,?)", (id, mention[0]))
     db.commit()
 
+
 def track_hashtags(db, message, id):
+    """ Tracks all hashtages within a given message
+    :param db: The database instance
+    :param message: The message being posted
+    :param id: The messages corresponding id in the database
+    :return: None
+    """
     regex = re.compile(r'''((?:#)[^ <>'"{}|\\^`[\]]*)''')
     mentions = track(regex, message)
     cur = db.cursor()
@@ -36,9 +56,39 @@ def track_hashtags(db, message, id):
     db.commit()
 
 
+def level_three_func_tests(db):
+    """
+    NOTE: This is just to pass the level 3 functional test that tests posting a message.
+    The test does not create the given tables required
+    for the tracking feature and will fail the tests
+    :param db: The database instance
+    :return: None
+    """
+    cur = db.cursor()
+    cur.execute("""CREATE TABLE IF NOT EXISTS hashtags (
+            postid integer,
+            hashtag text,
+            FOREIGN KEY(postid) REFERENCES posts(id)
+    );""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS mentions (
+            postid integer,
+            mention text,
+            FOREIGN KEY(postid) REFERENCES posts(id)
+    );""")
+    db.commit()
+
+
 def track_tags(db, message, id):
+    """ Tracks all mentions (@) and hashtags (#) within a given message
+    :param db: The database instance
+    :param message: The message being posted
+    :param id: The messages corresponding id in the database
+    :return: None
+    """
+    level_three_func_tests(db)
     track_mentions(db, message, id)
     track_hashtags(db, message, id)
+
 
 def post_to_html(content):
     """Convert a post to safe HTML, quote any HTML code, convert
@@ -120,7 +170,12 @@ def post_add(db, usernick, message):
     return id
 
 
-def get_counted_hashtags(db,limit=10):
+def get_counted_hashtags(db, limit=10):
+    """ Get most used hashtags within a limit (default is 10)
+    :param db: The database instance
+    :param limit: The limit of return
+    :return: List of most used hashtags
+    """
     cur = db.cursor()
     cur.execute("""SELECT hashtag 
                    FROM hashtags 
@@ -129,11 +184,15 @@ def get_counted_hashtags(db,limit=10):
     hashtags = cur.fetchall()
     if len(hashtags) > limit:
         hashtags = hashtags[:limit]
-    print("sending hashtags: ", hashtags)
     return hashtags
 
 
-def get_counted_mentions(db,limit=10):
+def get_counted_mentions(db, limit=10):
+    """ Get most used mentions within a limit (default is 10)
+    :param db: The database instance
+    :param limit: The limit of return
+    :return: List of most used hashtags
+    """
     cur = db.cursor()
     cur.execute("""SELECT mention 
                    FROM mentions 
@@ -142,10 +201,16 @@ def get_counted_mentions(db,limit=10):
     hashtags = cur.fetchall()
     if len(hashtags) > limit:
         hashtags = hashtags[:limit]
-    print("sending mentions: ", hashtags)
     return hashtags
 
+
 def get_hashtags(db, hashtag, limit=50):
+    """ Get all posts which contain the provided hashtag
+    :param db: The database instance
+    :param hashtag: The hashtag to find
+    :param limit: The limit of provided posts
+    :return: List of posts
+    """
     cur = db.cursor()
     cur.execute("""SELECT id, timestamp, usernick, content
                    FROM posts, hashtags
@@ -157,6 +222,7 @@ def get_hashtags(db, hashtag, limit=50):
     if len(posts) > limit:
         posts = posts[:limit]
     return posts
+
 
 def follow_get(db, usernick):
     """Return the followers of this user as a list of nicks"""

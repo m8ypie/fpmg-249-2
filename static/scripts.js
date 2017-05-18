@@ -40,14 +40,7 @@ function validationError(field, errorMessage, button, errorField){
     button.prop('disabled', true)
 }
 
-/**
- * Shadow the validation within the backend, so the user knows immediately the error.
- * 
- * @param {*} usernameInput 
- * @param {*} passwordInput 
- * @param {*} registerButton 
- * @param {*} errorMessage 
- */
+
 function verification(usernameInput, passwordInput, avatarInput, registerButton, errorMessage) {
     usernameInput.css("border","1px inset rgb(0, 0, 0)")
     passwordInput.css("border","1px inset rgb(0, 0, 0)")
@@ -151,19 +144,6 @@ function getHashtags(){
             }
         }
     )
-}
-
-function attemptLogin(){
-    var uname = document.getElementById("uname").value
-    var pwd = document.getElementById("pwd").value
-    $.post("/login",
-    {
-        username:uname,
-        passwrod:pwd
-    },
-    function(data, status){
-
-    })
 }
 
 function main(){
